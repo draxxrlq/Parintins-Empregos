@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plataforma Digital de Empregos — Parintins</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --rio: #16413A;
+    --rio-escuro: #0E2E29;
+    --areia: #F1E7D4;
+    --areia-clara: #FAF5EA;
+    --garantido: #B23A32;
+    --garantido-escuro: #8C2C26;
+    --caprichoso: #1D5A87;
+    --caprichoso-escuro: #163F5F;
+    --sol: #E2A23C;
+    --tinta: #1B241F;
+    --linha: rgba(27,36,31,0.12);
+    --branco: #FFFFFF;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--areia-clara);
+    color:var(--tinta);
+    font-family:'Inter', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{ font-family:'Fraunces', serif; letter-spacing:-0.01em; margin:0; }
+  .mono{ font-family:'Space Mono', monospace; }
+  .tela{ display:none; }
+  .tela.ativa{ display:block; animation:surgir .35s ease; }
+  @keyframes surgir{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+  /* ===== LOGIN ===== */
+  header.hero{
+    background:radial-gradient(120% 160% at 15% 0%, #1D5A44 0%, var(--rio) 45%, var(--rio-escuro) 100%);
+    color:var(--areia-clara);
+    padding:64px 24px 0;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero-inner{ max-width:1080px; margin:0 auto; position:relative; z-index:2; }
+  .eyebrow{
+    font-family:'Space Mono', monospace; font-size:12.5px; letter-spacing:0.14em; text-transform:uppercase;
+    color:#BFE3D6; display:flex; align-items:center; gap:10px; margin-bottom:18px;
+  }
+  .eyebrow::before{ content:""; width:26px; height:1px; background:#BFE3D6; display:inline-block; }
+  header.hero h1{ font-size:clamp(30px, 4.6vw, 52px); font-weight:700; line-height:1.05; max-width:760px; }
+  header.hero p.sub{ font-size:clamp(15px,1.9vw,18px); max-width:540px; color:#D8E9E1; margin-top:16px; line-height:1.55; }
+  .river-wave{ width:100%; display:block; margin-top:48px; }
+
+  main.login-main{ max-width:1080px; margin:0 auto; padding:48px 24px 100px; }
+
+  .card-login{
+    background:var(--branco);
+    border:1px solid var(--linha);
+    border-radius:8px;
+    padding:28px;
+    margin-bottom:28px;
+  }
+  .card-login h3{ font-size:16px; font-weight:600; margin-bottom:16px; }
+  .campos-login{ display:grid; grid-template-columns:1fr 1fr; gap:0 16px; }
+  @media (max-width:600px){ .campos-login{ grid-template-columns:1fr; } }
+
+  .selecao-times{ display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:8px; }
+  @media (max-width:700px){ .selecao-times{ grid-template-columns:1fr; } }
+  .time-card{
+    border-radius:6px; padding:30px 26px; color:var(--branco); border:none; text-align:left;
+    position:relative; overflow:hidden; transition:transform .18s ease; cursor:pointer;
+  }
+  .time-card:hover{ transform:translateY(-3px); }
+  .time-card.caprichoso{ background:linear-gradient(135deg,var(--caprichoso),var(--caprichoso-escuro)); }
+  .time-card.garantido{ background:linear-gradient(135deg,var(--garantido),var(--garantido-escuro)); }
+  .time-card .tag{ font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.12em; text-transform:uppercase; opacity:0.75; }
+  .time-card h3{ font-size:23px; margin:10px 0 6px; color:var(--branco); }
+  .time-card p{ font-size:13.5px; opacity:0.88; line-height:1.5; margin:0 0 18px; }
+  .time-card .ir{ font-family:'Space Mono',monospace; font-size:12.5px; display:inline-flex; align-items:center; gap:8px; }
+
+  /* ===== BARRA SUPERIOR DAS TELAS INTERNAS ===== */
+  .barra-topo{
+    background:var(--rio); color:var(--areia-clara);
+    padding:16px 24px; display:flex; align-items:center; justify-content:space-between;
+  }
+  .barra-topo .marca{ display:flex; align-items:center; gap:10px; font-weight:700; font-size:15px; }
+  .barra-topo .marca .bola{ width:9px; height:9px; border-radius:50%; background:var(--sol); }
+  .barra-topo .sair{
+    font-family:'Space Mono',monospace; font-size:12px; background:none; border:1px solid rgba(255,255,255,0.3);
+    color:var(--areia-clara); padding:7px 14px; border-radius:20px; cursor:pointer;
+  }
+  .barra-topo .sair:hover{ background:rgba(255,255,255,0.08); }
+
+  nav.subabas{
+    max-width:1080px; margin:0 auto; display:flex; background:var(--areia-clara);
+    border-bottom:1px solid var(--linha); position:sticky; top:0; z-index:50;
+  }
+  nav.subabas button{
+    flex:1; border:none; background:none; padding:16px 12px; font-family:'Space Mono', monospace;
+    font-size:12px; letter-spacing:0.07em; text-transform:uppercase; color:#7A8580; cursor:pointer;
+    border-bottom:3px solid transparent; transition:all .18s ease;
+  }
+  nav.subabas button:hover{ color:var(--tinta); }
+  nav.subabas button.ativa{ color:var(--tinta); font-weight:700; }
+  #tela-candidato nav.subabas button.ativa{ border-color:var(--caprichoso); }
+  #tela-empregador nav.subabas button.ativa{ border-color:var(--garantido); }
+
+  main.painel-main{ max-width:1080px; margin:0 auto; padding:40px 24px 100px; }
+  .subpainel{ display:none; }
+  .subpainel.ativo{ display:block; animation:surgir .3s ease; }
+
+  .cabecalho-secao{
+    display:flex; justify-content:space-between; align-items:flex-end; border-bottom:1px solid var(--linha);
+    padding-bottom:16px; margin-bottom:28px; flex-wrap:wrap; gap:12px;
+  }
+  .cabecalho-secao h2{ font-size:24px; }
+  .badge-time{ font-family:'Space Mono',monospace; font-size:11px; padding:6px 12px; border-radius:20px; letter-spacing:0.05em; text-transform:uppercase; }
+  .badge-caprichoso{ background:rgba(29,90,135,0.1); color:var(--caprichoso); }
+  .badge-garantido{ background:rgba(178,58,50,0.1); color:var(--garantido); }
+
+  .layout-duas-colunas{ display:grid; grid-template-columns:1fr 1.3fr; gap:32px; align-items:start; }
+  @media (max-width:860px){ .layout-duas-colunas{ grid-template-columns:1fr; } }
+
+  .painel-branco{ background:var(--branco); border:1px solid var(--linha); border-radius:6px; padding:24px; margin-bottom:20px; }
+  .painel-branco h3{ font-size:15px; margin-bottom:16px; font-weight:600; }
+  .painel-branco h4{ font-size:12.5px; text-transform:uppercase; letter-spacing:0.05em; color:#7A8580; margin:20px 0 10px; font-family:'Space Mono',monospace; }
+  .painel-branco h4:first-of-type{ margin-top:0; }
+
+  label{ display:block; font-size:12px; font-weight:600; margin:0 0 6px; color:#4B534E; }
+  input,select,textarea{
+    width:100%; padding:9px 11px; border:1px solid var(--linha); border-radius:4px;
+    font-family:'Inter',sans-serif; font-size:13.5px; margin-bottom:14px; background:var(--areia-clara); color:var(--tinta);
+  }
+  textarea{ resize:vertical; min-height:60px; }
+  input:focus,select:focus,textarea:focus,button:focus-visible{ outline:2px solid var(--sol); outline-offset:1px; }
+
+  .botao{ width:100%; padding:11px; border:none; border-radius:4px; font-weight:700; font-size:13.5px; cursor:pointer; transition:opacity .15s ease; }
+  .botao:hover{ opacity:0.88; }
+  .botao-caprichoso{ background:var(--caprichoso); color:var(--branco); }
+  .botao-garantido{ background:var(--garantido); color:var(--branco); }
+  .botao-pequeno{ width:auto; padding:8px 14px; font-size:12.5px; }
+  .botao-fantasma{ background:none; border:1px solid var(--linha); color:var(--tinta); padding:8px 13px; font-size:12px; width:auto; border-radius:4px; cursor:pointer; }
+  .botao-fantasma:hover{ background:var(--areia); }
+
+  .linha-form{ display:grid; grid-template-columns:1fr 1fr; gap:0 12px; }
+  @media (max-width:500px){ .linha-form{ grid-template-columns:1fr; } }
+
+  .chip{
+    display:inline-flex; align-items:center; gap:6px; background:var(--areia); border-radius:20px;
+    padding:5px 12px; font-size:12px; margin:0 6px 6px 0;
+  }
+  .chip button{ background:none; border:none; cursor:pointer; color:#8B948E; font-size:13px; line-height:1; padding:0; }
+  .lista-mini{ list-style:none; padding:0; margin:0 0 14px; }
+  .lista-mini li{
+    display:flex; justify-content:space-between; align-items:flex-start; gap:10px; padding:9px 0; border-top:1px solid var(--linha); font-size:13px;
+  }
+  .lista-mini li:first-child{ border-top:none; }
+  .lista-mini li .txt b{ display:block; font-size:13.5px; }
+  .lista-mini li .txt span{ display:block; color:#7A8580; font-size:11.5px; font-family:'Space Mono',monospace; margin-top:2px; }
+  .lista-mini li .txt p{ margin:4px 0 0; font-size:12.5px; color:#4B534E; line-height:1.5; }
+  .remover{ background:none; border:none; color:#B0B8B2; cursor:pointer; font-size:15px; flex-shrink:0; }
+  .remover:hover{ color:var(--garantido); }
+
+  .vazio-mini{ text-align:center; padding:16px; color:#8B948E; font-size:12.5px; border:1px dashed var(--linha); border-radius:5px; margin-bottom:14px; }
+  .vazio{ text-align:center; padding:40px 20px; color:#8B948E; font-size:14px; border:1px dashed var(--linha); border-radius:6px; }
+
+  /* ===== CURRICULO PREVIEW ===== */
+  .curriculo-card{
+    display:grid; grid-template-columns:220px 1fr; background:var(--branco); border-radius:8px; overflow:hidden;
+    border:1px solid var(--linha); box-shadow:0 12px 32px rgba(20,40,32,0.08);
+  }
+  @media (max-width:600px){ .curriculo-card{ grid-template-columns:1fr; } }
+  .cv-lateral{ background:var(--tinta); color:var(--areia-clara); padding:28px 22px; }
+  .cv-foto{
+    width:82px; height:82px; border-radius:50%; object-fit:cover; background:#333d38;
+    display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-size:26px;
+    color:var(--areia-clara); margin-bottom:20px; border:2px solid var(--sol);
+  }
+  .cv-lateral h4{ font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--sol); margin:22px 0 10px; }
+  .cv-lateral h4:first-of-type{ margin-top:0; }
+  .cv-lateral .item{ font-size:12.5px; line-height:1.6; margin-bottom:8px; color:#DCE6DF; }
+  .cv-lateral .item b{ display:block; color:var(--branco); font-size:12.5px; }
+  .cv-lateral .item span{ font-size:11px; color:#9FB0A7; font-family:'Space Mono',monospace; }
+  .cv-lateral .skill-tag{
+    display:inline-block; background:rgba(255,255,255,0.08); border-radius:20px; padding:3px 10px; font-size:11px; margin:0 5px 5px 0;
+  }
+  .cv-principal{ padding:30px 30px; }
+  .cv-principal .nome{ font-size:28px; font-weight:700; }
+  .cv-principal h4{ font-family:'Space Mono',monospace; font-size:11.5px; letter-spacing:0.1em; text-transform:uppercase; color:var(--caprichoso); margin:26px 0 10px; border-bottom:1px solid var(--linha); padding-bottom:8px; }
+  .cv-principal h4:first-of-type{ margin-top:24px; }
+  .cv-principal .sobre{ font-size:13.5px; line-height:1.65; color:#4B534E; }
+  .cv-exp-item{ margin-bottom:16px; }
+  .cv-exp-item .cargo{ font-size:14.5px; font-weight:700; }
+  .cv-exp-item .periodo{ font-family:'Space Mono',monospace; font-size:11px; color:#7A8580; margin:2px 0 6px; }
+  .cv-exp-item p{ font-size:12.5px; color:#4B534E; line-height:1.55; margin:0; }
+
+  /* ===== VAGAS ===== */
+  .vaga-card{ background:var(--branco); border:1px solid var(--linha); border-radius:6px; padding:20px 22px; margin-bottom:14px; }
+  .vaga-topo{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+  .vaga-titulo{ font-size:16.5px; font-weight:700; }
+  .vaga-meta{ font-family:'Space Mono',monospace; font-size:11.5px; color:#7A8580; margin-top:5px; }
+  .vaga-status{ font-family:'Space Mono',monospace; font-size:11px; padding:4px 10px; border-radius:20px; white-space:nowrap; text-transform:uppercase; letter-spacing:0.04em; }
+  .status-aberta{ background:rgba(29,90,135,0.1); color:var(--caprichoso); }
+  .status-encerrada{ background:rgba(178,58,50,0.1); color:var(--garantido); }
+  .vaga-desc{ font-size:13.5px; color:#4B534E; margin-top:10px; line-height:1.55; }
+  .vaga-acoes{ margin-top:14px; display:flex; gap:10px; flex-wrap:wrap; }
+
+  .lista-candidatura{ list-style:none; padding:0; margin:14px 0 0; }
+  .lista-candidatura li{ display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-top:1px solid var(--linha); font-size:13.5px; }
+  .lista-candidatura li:first-child{ border-top:none; }
+  .status-pill{ font-family:'Space Mono',monospace; font-size:10.5px; padding:3px 9px; border-radius:20px; text-transform:uppercase; }
+  .pill-recebido{ background:#EEF1EE; color:#5C655F; }
+  .pill-analise{ background:rgba(226,162,60,0.18); color:#8A6414; }
+  .pill-selecionado{ background:rgba(29,90,135,0.14); color:var(--caprichoso); }
+  .pill-preenchida{ background:rgba(178,58,50,0.12); color:var(--garantido); }
+
+  #toast{
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(140%);
+    background:var(--tinta); color:var(--areia-clara); padding:14px 22px; border-radius:6px; font-size:13.5px;
+    font-family:'Space Mono',monospace; box-shadow:0 8px 24px rgba(0,0,0,0.25); z-index:200; transition:transform .3s ease;
+    max-width:90vw; text-align:center;
+  }
+  #toast.mostrar{ transform:translateX(-50%) translateY(0); }
+  footer{ text-align:center; padding:26px 20px 46px; font-family:'Space Mono',monospace; font-size:11px; color:#9AA39D; }
+
+  @media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
+</style>
+</head>
+<body>
+
+<!-- ============================================================ TELA: LOGIN ============================================================ -->
+<section id="tela-login" class="tela ativa">
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="eyebrow">Parintins · Amazonas</div>
+      <h1>A vaga certa não devia se perder<br>num grupo de WhatsApp.</h1>
+      <p class="sub">Um portal só para o município: currículo digital, painel de vagas e retorno em tempo real.</p>
+    </div>
+    <svg class="river-wave" viewBox="0 0 1080 90" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,40 C180,90 360,0 540,40 C720,80 900,10 1080,50 L1080,90 L0,90 Z" fill="#F1E7D4" opacity="0.15"></path>
+      <path d="M0,55 C180,20 360,90 540,55 C720,20 900,80 1080,45 L1080,90 L0,90 Z" fill="#FAF5EA"></path>
+    </svg>
+  </header>
+
+  <main class="login-main">
+    <div class="card-login">
+      <h3>Identifique-se</h3>
+      <div class="campos-login">
+        <div>
+          <label for="login-nome">Nome completo</label>
+          <input id="login-nome" placeholder="Ex.: Juliana Silva">
+        </div>
+        <div>
+          <label for="login-email">E-mail</label>
+          <input id="login-email" type="email" placeholder="voce@email.com">
+        </div>
+      </div>
+    </div>
+
+    <p style="color:#4B534E; font-size:14px; margin:0 0 14px;">Escolha como deseja entrar:</p>
+    <div class="selecao-times">
+      <button class="time-card caprichoso" onclick="entrarComo('candidato')">
+        <div class="tag">Time Caprichoso</div>
+        <h3>Sou Candidato</h3>
+        <p>Monte seu currículo digital e acompanhe suas candidaturas em tempo real.</p>
+        <span class="ir">Candidatar-se →</span>
+      </button>
+      <button class="time-card garantido" onclick="entrarComo('empregador')">
+        <div class="tag">Time Garantido</div>
+        <h3>Sou Empregador</h3>
+        <p>Publique vagas, faça a triagem e encerre o processo com notificação automática.</p>
+        <span class="ir">Entrar como empregador →</span>
+      </button>
+    </div>
+  </main>
+</section>
+
+<!-- ============================================================ TELA: CANDIDATO ============================================================ -->
+<section id="tela-candidato" class="tela">
+  <div class="barra-topo">
+    <div class="marca"><span class="bola"></span> Plataforma de Empregos · Parintins</div>
+    <button class="sair" onclick="sair()">Sair</button>
+  </div>
+  <nav class="subabas">
+    <button data-sub="vagas" class="ativa" onclick="mudarSubaba('candidato','vagas')">Vagas Disponíveis</button>
+    <button data-sub="curriculo" onclick="mudarSubaba('candidato','curriculo')">Meu Currículo</button>
+    <button data-sub="candidaturas" onclick="mudarSubaba('candidato','candidaturas')">Minhas Candidaturas</button>
+  </nav>
+
+  <main class="painel-main">
+
+    <!-- SUB: VAGAS -->
+    <div id="sub-candidato-vagas" class="subpainel ativo">
+      <div class="cabecalho-secao">
+        <h2>Painel centralizado de vagas</h2>
+        <span class="badge-time badge-caprichoso">Time Caprichoso</span>
+      </div>
+      <div id="lista-vagas-candidato"></div>
+    </div>
+
+    <!-- SUB: CURRICULO -->
+    <div id="sub-candidato-curriculo" class="subpainel">
+      <div class="cabecalho-secao">
+        <h2>Meu currículo digital</h2>
+        <span class="badge-time badge-caprichoso">Time Caprichoso</span>
+      </div>
+
+      <div class="layout-duas-colunas">
+        <div>
+          <div class="painel-branco">
+            <h4>Foto e dados</h4>
+            <label for="cv-foto">Foto de perfil</label>
+            <input id="cv-foto" type="file" accept="image/*" onchange="lerFoto(event)">
+            <label for="cv-nome">Nome completo</label>
+            <input id="cv-nome" placeholder="Ex.: Juliana Silva">
+            <label for="cv-idade">Idade</label>
+            <input id="cv-idade" type="number" min="14" placeholder="Ex.: 25">
+
+            <h4>Contato</h4>
+            <label for="cv-tel">Telefone / WhatsApp</label>
+            <input id="cv-tel" placeholder="(92) 9____-____">
+            <label for="cv-email">E-mail</label>
+            <input id="cv-email" type="email" placeholder="voce@email.com">
+            <label for="cv-site">Site / rede social (opcional)</label>
+            <input id="cv-site" placeholder="@usuario">
+
+            <h4>Sobre mim</h4>
+            <textarea id="cv-sobre" placeholder="Fale um pouco sobre você, seus objetivos e o que procura."></textarea>
+
+            <button class="botao botao-caprichoso" onclick="atualizarCurriculo()">Atualizar currículo</button>
+          </div>
+        </div>
+
+        <div>
+          <div class="painel-branco">
+            <h4>Formação acadêmica</h4>
+            <div id="lista-formacao" class="lista-mini"></div>
+            <div class="linha-form">
+              <input id="f-curso" placeholder="Curso">
+              <input id="f-instituicao" placeholder="Instituição">
+            </div>
+            <input id="f-periodo" placeholder="Período (ex.: 2019-2023)">
+            <button class="botao-fantasma" onclick="adicionarFormacao()">+ Adicionar formação</button>
+          </div>
+
+          <div class="painel-branco">
+            <h4>Experiência profissional</h4>
+            <div id="lista-experiencia" class="lista-mini"></div>
+            <div class="linha-form">
+              <input id="e-cargo" placeholder="Cargo">
+              <input id="e-empresa" placeholder="Empresa">
+            </div>
+            <input id="e-periodo" placeholder="Período (ex.: 2018-2022)">
+            <textarea id="e-desc" placeholder="Principais atividades e conquistas"></textarea>
+            <button class="botao-fantasma" onclick="adicionarExperiencia()">+ Adicionar experiência</button>
+          </div>
+
+          <div class="painel-branco">
+            <h4>Habilidades</h4>
+            <div id="lista-habilidades">
+              <div class="vazio-mini">Nenhuma habilidade adicionada.</div>
+            </div>
+            <div class="linha-form">
+              <input id="h-nome" placeholder="Ex.: Organização, Empatia..." onkeypress="if(event.key==='Enter'){adicionarHabilidade(); event.preventDefault();}">
+            </div>
+            <button class="botao-fantasma" onclick="adicionarHabilidade()">+ Adicionar habilidade</button>
+
+            <h4>Idiomas</h4>
+            <div id="lista-idiomas" class="lista-mini"></div>
+            <div class="linha-form">
+              <input id="i-idioma" placeholder="Idioma">
+              <select id="i-nivel">
+                <option>Básico</option>
+                <option selected>Intermediário</option>
+                <option>Avançado</option>
+                <option>Fluente</option>
+              </select>
+            </div>
+            <button class="botao-fantasma" onclick="adicionarIdioma()">+ Adicionar idioma</button>
+          </div>
+        </div>
+      </div>
+
+      <h4 style="font-family:'Space Mono',monospace; font-size:12px; text-transform:uppercase; letter-spacing:0.06em; color:#7A8580; margin:36px 0 14px;">Pré-visualização</h4>
+      <div id="curriculo-preview"></div>
+    </div>
+
+    <!-- SUB: CANDIDATURAS -->
+    <div id="sub-candidato-candidaturas" class="subpainel">
+      <div class="cabecalho-secao">
+        <h2>Minhas candidaturas</h2>
+        <span class="badge-time badge-caprichoso">Time Caprichoso</span>
+      </div>
+      <div class="painel-branco">
+        <h3>Acompanhamento em tempo real</h3>
+        <div id="minhas-candidaturas"><div class="vazio">Você ainda não se candidatou a nenhuma vaga.</div></div>
+      </div>
+    </div>
+
+  </main>
+</section>
+
+<!-- ============================================================ TELA: EMPREGADOR ============================================================ -->
+<section id="tela-empregador" class="tela">
+  <div class="barra-topo">
+    <div class="marca"><span class="bola"></span> Plataforma de Empregos · Parintins</div>
+    <button class="sair" onclick="sair()">Sair</button>
+  </div>
+  <nav class="subabas">
+    <button data-sub="publicar" class="ativa" onclick="mudarSubaba('empregador','publicar')">Publicar Vaga</button>
+    <button data-sub="gerenciar" onclick="mudarSubaba('empregador','gerenciar')">Gerenciar Vagas</button>
+  </nav>
+
+  <main class="painel-main">
+
+    <div id="sub-empregador-publicar" class="subpainel ativo">
+      <div class="cabecalho-secao">
+        <h2>Publicar nova vaga</h2>
+        <span class="badge-time badge-garantido">Time Garantido</span>
+      </div>
+      <div class="layout-duas-colunas">
+        <div class="painel-branco">
+          <label for="v-titulo">Título da vaga</label>
+          <input id="v-titulo" placeholder="Ex.: Atendente de loja">
+          <label for="v-setor">Setor</label>
+          <select id="v-setor">
+            <option>Comércio e Vendas</option>
+            <option>Turismo e Hotelaria</option>
+            <option>Administrativo</option>
+            <option>Construção Civil</option>
+            <option>Educação</option>
+            <option>Saúde</option>
+          </select>
+          <label for="v-tipo">Tipo de contratação</label>
+          <select id="v-tipo">
+            <option>Permanente</option>
+            <option>Temporária</option>
+          </select>
+          <label for="v-desc">Descrição breve</label>
+          <input id="v-desc" placeholder="Ex.: Turno da tarde, experiência com caixa">
+          <button class="botao botao-garantido" onclick="publicarVaga()">Publicar vaga</button>
+        </div>
+        <div></div>
+      </div>
+    </div>
+
+    <div id="sub-empregador-gerenciar" class="subpainel">
+      <div class="cabecalho-secao">
+        <h2>Triagem e gestão das suas vagas</h2>
+        <span class="badge-time badge-garantido">Time Garantido</span>
+      </div>
+      <div id="lista-vagas-empregador"><div class="vazio">Você ainda não publicou nenhuma vaga.</div></div>
+    </div>
+
+  </main>
+</section>
+
+<footer>PLATAFORMA DIGITAL DE EMPREGOS — PARINTINS/AM · protótipo funcional, dados de demonstração em memória</footer>
+<div id="toast"></div>
+
+<script>
+  // ===== ESTADO EM MEMÓRIA =====
+  let vagas = [
+    { id: 1, titulo: "Auxiliar de Cozinha", setor: "Turismo e Hotelaria", tipo: "Temporária", desc: "Vaga para o período de festividades locais, turno noturno.", status: "aberta", candidatos: [] },
+    { id: 2, titulo: "Vendedor(a) de Loja", setor: "Comércio e Vendas", tipo: "Permanente", desc: "Experiência com atendimento ao cliente e caixa.", status: "aberta", candidatos: [] },
+    { id: 3, titulo: "Auxiliar Administrativo", setor: "Administrativo", tipo: "Permanente", desc: "Conhecimentos básicos de informática e organização de documentos.", status: "aberta", candidatos: [] }
+  ];
+  let proximoIdVaga = 4;
+  let minhasCandidaturasIds = [];
+
+  let meuCurriculo = {
+    foto: null, nome: '', idade: '', tel: '', email: '', site: '', sobre: '',
+    formacoes: [], experiencias: [], habilidades: [], idiomas: []
+  };
+
+  // ===== NAVEGAÇÃO =====
+  function entrarComo(tipo){
+    const nome = document.getElementById('login-nome').value.trim();
+    if(nome){ meuCurriculo.nome = nome; document.getElementById('cv-nome').value = nome; }
+    document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
+    if(tipo === 'candidato'){
+      document.getElementById('tela-candidato').classList.add('ativa');
+      mudarSubaba('candidato','vagas');
+      renderizarVagasCandidato();
+      renderizarMinhasCandidaturas();
+    } else {
+      document.getElementById('tela-empregador').classList.add('ativa');
+      mudarSubaba('empregador','publicar');
+      renderizarVagasEmpregador();
+    }
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  function sair(){
+    document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
+    document.getElementById('tela-login').classList.add('ativa');
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  function mudarSubaba(tela, nome){
+    document.querySelectorAll('#tela-' + tela + ' .subpainel').forEach(p => p.classList.remove('ativo'));
+    document.getElementById('sub-' + tela + '-' + nome).classList.add('ativo');
+    document.querySelectorAll('#tela-' + tela + ' nav.subabas button').forEach(b => b.classList.remove('ativa'));
+    document.querySelector('#tela-' + tela + ' nav.subabas button[data-sub="' + nome + '"]').classList.add('ativa');
+    if(tela === 'candidato' && nome === 'candidaturas'){ renderizarMinhasCandidaturas(); }
+    if(tela === 'empregador' && nome === 'gerenciar'){ renderizarVagasEmpregador(); }
+  }
+
+  function mostrarToast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('mostrar');
+    clearTimeout(window._toastTimer);
+    window._toastTimer = setTimeout(() => t.classList.remove('mostrar'), 3600);
+  }
+
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+  }
+
+  // ===== CURRÍCULO =====
+  function lerFoto(event){
+    const arquivo = event.target.files[0];
+    if(!arquivo) return;
+    const leitor = new FileReader();
+    leitor.onload = e => { meuCurriculo.foto = e.target.result; renderizarPreviewCurriculo(); };
+    leitor.readAsDataURL(arquivo);
+  }
+
+  function adicionarFormacao(){
+    const curso = document.getElementById('f-curso').value.trim();
+    const instituicao = document.getElementById('f-instituicao').value.trim();
+    const periodo = document.getElementById('f-periodo').value.trim();
+    if(!curso){ mostrarToast('Informe ao menos o nome do curso.'); return; }
+    meuCurriculo.formacoes.push({ curso, instituicao, periodo });
+    document.getElementById('f-curso').value = '';
+    document.getElementById('f-instituicao').value = '';
+    document.getElementById('f-periodo').value = '';
+    renderizarFormacoes();
+    renderizarPreviewCurriculo();
+  }
+  function removerFormacao(i){ meuCurriculo.formacoes.splice(i,1); renderizarFormacoes(); renderizarPreviewCurriculo(); }
+  function renderizarFormacoes(){
+    const cont = document.getElementById('lista-formacao');
+    if(meuCurriculo.formacoes.length === 0){ cont.innerHTML = '<div class="vazio-mini">Nenhuma formação adicionada.</div>'; return; }
+    cont.innerHTML = meuCurriculo.formacoes.map((f,i) => `
+      <li><div class="txt"><b>${escapeHtml(f.curso)}</b><span>${escapeHtml(f.instituicao || '')} ${f.periodo ? '· ' + escapeHtml(f.periodo) : ''}</span></div>
+      <button class="remover" onclick="removerFormacao(${i})">×</button></li>`).join('');
+  }
+
+  function adicionarExperiencia(){
+    const cargo = document.getElementById('e-cargo').value.trim();
+    const empresa = document.getElementById('e-empresa').value.trim();
+    const periodo = document.getElementById('e-periodo').value.trim();
+    const desc = document.getElementById('e-desc').value.trim();
+    if(!cargo){ mostrarToast('Informe ao menos o cargo.'); return; }
+    meuCurriculo.experiencias.push({ cargo, empresa, periodo, desc });
+    document.getElementById('e-cargo').value = '';
+    document.getElementById('e-empresa').value = '';
+    document.getElementById('e-periodo').value = '';
+    document.getElementById('e-desc').value = '';
+    renderizarExperiencias();
+    renderizarPreviewCurriculo();
+  }
+  function removerExperiencia(i){ meuCurriculo.experiencias.splice(i,1); renderizarExperiencias(); renderizarPreviewCurriculo(); }
+  function renderizarExperiencias(){
+    const cont = document.getElementById('lista-experiencia');
+    if(meuCurriculo.experiencias.length === 0){ cont.innerHTML = '<div class="vazio-mini">Nenhuma experiência adicionada.</div>'; return; }
+    cont.innerHTML = meuCurriculo.experiencias.map((e,i) => `
+      <li><div class="txt"><b>${escapeHtml(e.cargo)}</b><span>${escapeHtml(e.empresa || '')} ${e.periodo ? '· ' + escapeHtml(e.periodo) : ''}</span>${e.desc ? '<p>' + escapeHtml(e.desc) + '</p>' : ''}</div>
+      <button class="remover" onclick="removerExperiencia(${i})">×</button></li>`).join('');
+  }
+
+  function adicionarHabilidade(){
+    const nome = document.getElementById('h-nome').value.trim();
+    if(!nome){ return; }
+    meuCurriculo.habilidades.push(nome);
+    document.getElementById('h-nome').value = '';
+    renderizarHabilidades();
+    renderizarPreviewCurriculo();
+  }
+  function removerHabilidade(i){ meuCurriculo.habilidades.splice(i,1); renderizarHabilidades(); renderizarPreviewCurriculo(); }
+  function renderizarHabilidades(){
+    const cont = document.getElementById('lista-habilidades');
+    if(meuCurriculo.habilidades.length === 0){ cont.innerHTML = '<div class="vazio-mini">Nenhuma habilidade adicionada.</div>'; return; }
+    cont.innerHTML = meuCurriculo.habilidades.map((h,i) => `<span class="chip">${escapeHtml(h)}<button onclick="removerHabilidade(${i})">×</button></span>`).join('');
+  }
+
+  function adicionarIdioma(){
+    const idioma = document.getElementById('i-idioma').value.trim();
+    const nivel = document.getElementById('i-nivel').value;
+    if(!idioma){ mostrarToast('Informe o idioma.'); return; }
+    meuCurriculo.idiomas.push({ idioma, nivel });
+    document.getElementById('i-idioma').value = '';
+    renderizarIdiomas();
+    renderizarPreviewCurriculo();
+  }
+  function removerIdioma(i){ meuCurriculo.idiomas.splice(i,1); renderizarIdiomas(); renderizarPreviewCurriculo(); }
+  function renderizarIdiomas(){
+    const cont = document.getElementById('lista-idiomas');
+    if(meuCurriculo.idiomas.length === 0){ cont.innerHTML = '<div class="vazio-mini">Nenhum idioma adicionado.</div>'; return; }
+    cont.innerHTML = meuCurriculo.idiomas.map((idi,i) => `
+      <li><div class="txt"><b>${escapeHtml(idi.idioma)}</b><span>${escapeHtml(idi.nivel)}</span></div>
+      <button class="remover" onclick="removerIdioma(${i})">×</button></li>`).join('');
+  }
+
+  function atualizarCurriculo(){
+    meuCurriculo.nome = document.getElementById('cv-nome').value.trim();
+    meuCurriculo.idade = document.getElementById('cv-idade').value.trim();
+    meuCurriculo.tel = document.getElementById('cv-tel').value.trim();
+    meuCurriculo.email = document.getElementById('cv-email').value.trim();
+    meuCurriculo.site = document.getElementById('cv-site').value.trim();
+    meuCurriculo.sobre = document.getElementById('cv-sobre').value.trim();
+    if(!meuCurriculo.nome){ mostrarToast('Preencha ao menos o nome para atualizar o currículo.'); return; }
+    renderizarPreviewCurriculo();
+    mostrarToast('Currículo digital atualizado — sem papel, sem impressão.');
+  }
+
+  function renderizarPreviewCurriculo(){
+    const c = meuCurriculo;
+    const cont = document.getElementById('curriculo-preview');
+    if(!c.nome){ cont.innerHTML = '<div class="vazio">Preencha seus dados e clique em "Atualizar currículo" para ver a pré-visualização.</div>'; return; }
+
+    const inicial = c.nome.trim().charAt(0).toUpperCase();
+    const fotoHtml = c.foto ? `<img class="cv-foto" src="${c.foto}">` : `<div class="cv-foto">${inicial}</div>`;
+
+    const contatoHtml = `
+      <h4>Contato</h4>
+      ${c.tel ? `<div class="item">${escapeHtml(c.tel)}</div>` : ''}
+      ${c.email ? `<div class="item">${escapeHtml(c.email)}</div>` : ''}
+      ${c.site ? `<div class="item">${escapeHtml(c.site)}</div>` : ''}
+      ${(!c.tel && !c.email && !c.site) ? '<div class="item">—</div>' : ''}`;
+
+    const formacaoHtml = `
+      <h4>Formação</h4>
+      ${c.formacoes.length ? c.formacoes.map(f => `<div class="item"><b>${escapeHtml(f.curso)}</b>${escapeHtml(f.instituicao || '')}<br><span>${escapeHtml(f.periodo || '')}</span></div>`).join('') : '<div class="item">—</div>'}`;
+
+    const habilidadesHtml = `
+      <h4>Habilidades</h4>
+      <div>${c.habilidades.length ? c.habilidades.map(h => `<span class="skill-tag">${escapeHtml(h)}</span>`).join('') : '<span class="item">—</span>'}</div>`;
+
+    const idiomasHtml = `
+      <h4>Idiomas</h4>
+      ${c.idiomas.length ? c.idiomas.map(i => `<div class="item"><b>${escapeHtml(i.idioma)}</b><span>${escapeHtml(i.nivel)}</span></div>`).join('') : '<div class="item">—</div>'}`;
+
+    const expHtml = c.experiencias.length ? c.experiencias.map(e => `
+      <div class="cv-exp-item">
+        <div class="cargo">${escapeHtml(e.cargo)}${e.empresa ? ' — ' + escapeHtml(e.empresa) : ''}</div>
+        <div class="periodo">${escapeHtml(e.periodo || '')}</div>
+        ${e.desc ? `<p>${escapeHtml(e.desc)}</p>` : ''}
+      </div>`).join('') : '<div class="vazio-mini">Nenhuma experiência adicionada.</div>';
+
+    cont.innerHTML = `
+      <div class="curriculo-card">
+        <div class="cv-lateral">
+          ${fotoHtml}
+          ${contatoHtml}
+          ${formacaoHtml}
+          ${habilidadesHtml}
+          ${idiomasHtml}
+        </div>
+        <div class="cv-principal">
+          <div class="nome">${escapeHtml(c.nome)}</div>
+          ${c.idade ? `<div style="color:#7A8580; font-family:'Space Mono',monospace; font-size:12px; margin-top:4px;">${escapeHtml(c.idade)} anos</div>` : ''}
+          <h4>Sobre mim</h4>
+          <p class="sobre">${escapeHtml(c.sobre || '—')}</p>
+          <h4>Experiência</h4>
+          ${expHtml}
+        </div>
+      </div>`;
+  }
+
+  // ===== VAGAS — CANDIDATO =====
+  function renderizarVagasCandidato(){
+    const cont = document.getElementById('lista-vagas-candidato');
+    if(vagas.length === 0){ cont.innerHTML = '<div class="vazio">Nenhuma vaga disponível no momento.</div>'; return; }
+    cont.innerHTML = vagas.map(v => {
+      const jaCandidatado = minhasCandidaturasIds.includes(v.id);
+      const encerrada = v.status === 'encerrada';
+      let acao;
+      if(encerrada){ acao = `<span class="vaga-status status-encerrada">Vaga preenchida</span>`; }
+      else if(jaCandidatado){ acao = `<span class="vaga-status status-aberta">Candidatura enviada</span>`; }
+      else { acao = `<button class="botao botao-caprichoso botao-pequeno" onclick="candidatarSe(${v.id})">Candidatar-se</button>`; }
+      return `
+      <div class="vaga-card">
+        <div class="vaga-topo">
+          <div><div class="vaga-titulo">${escapeHtml(v.titulo)}</div><div class="vaga-meta">${escapeHtml(v.setor)} · ${escapeHtml(v.tipo)}</div></div>
+          <span class="vaga-status ${encerrada ? 'status-encerrada' : 'status-aberta'}">${encerrada ? 'Encerrada' : 'Aberta'}</span>
+        </div>
+        <div class="vaga-desc">${escapeHtml(v.desc)}</div>
+        <div class="vaga-acoes">${acao}</div>
+      </div>`;
+    }).join('');
+  }
+
+  function candidatarSe(vagaId){
+    if(!meuCurriculo.nome){ mostrarToast('Preencha seu currículo antes de se candidatar.'); mudarSubaba('candidato','curriculo'); return; }
+    const vaga = vagas.find(v => v.id === vagaId);
+    if(!vaga || vaga.status === 'encerrada') return;
+    vaga.candidatos.push({ nome: meuCurriculo.nome, status: 'recebido' });
+    minhasCandidaturasIds.push(vagaId);
+    mostrarToast('Candidatura enviada para "' + vaga.titulo + '".');
+    renderizarVagasCandidato();
+    renderizarMinhasCandidaturas();
+  }
+
+  function renderizarMinhasCandidaturas(){
+    const cont = document.getElementById('minhas-candidaturas');
+    if(minhasCandidaturasIds.length === 0){ cont.innerHTML = '<div class="vazio">Você ainda não se candidatou a nenhuma vaga.</div>'; return; }
+    cont.innerHTML = '<ul class="lista-candidatura">' + minhasCandidaturasIds.map(id => {
+      const vaga = vagas.find(v => v.id === id);
+      const minhaCand = vaga.candidatos.find(c => c.nome === meuCurriculo.nome);
+      const status = minhaCand ? minhaCand.status : 'recebido';
+      const textos = { recebido: 'Recebido', analise: 'Em análise', selecionado: 'Selecionado', preenchida: 'Vaga preenchida' };
+      return `<li><span>${escapeHtml(vaga.titulo)}</span><span class="status-pill pill-${status}">${textos[status]}</span></li>`;
+    }).join('') + '</ul>';
+  }
+
+  // ===== VAGAS — EMPREGADOR =====
+  function publicarVaga(){
+    const titulo = document.getElementById('v-titulo').value.trim();
+    const setor = document.getElementById('v-setor').value;
+    const tipo = document.getElementById('v-tipo').value;
+    const desc = document.getElementById('v-desc').value.trim() || 'Sem descrição adicional.';
+    if(!titulo){ mostrarToast('Dê um título para a vaga antes de publicar.'); return; }
+    vagas.push({ id: proximoIdVaga++, titulo, setor, tipo, desc, status: 'aberta', candidatos: [] });
+    document.getElementById('v-titulo').value = '';
+    document.getElementById('v-desc').value = '';
+    mostrarToast('Vaga publicada no painel centralizado.');
+    mudarSubaba('empregador','gerenciar');
+  }
+
+  function renderizarVagasEmpregador(){
+    const cont = document.getElementById('lista-vagas-empregador');
+    if(vagas.length === 0){ cont.innerHTML = '<div class="vazio">Você ainda não publicou nenhuma vaga.</div>'; return; }
+    cont.innerHTML = vagas.slice().reverse().map(v => {
+      const encerrada = v.status === 'encerrada';
+      const candidatosHtml = v.candidatos.length === 0
+        ? '<div class="vazio" style="padding:16px;">Nenhum candidato ainda.</div>'
+        : '<ul class="lista-candidatura">' + v.candidatos.map((c,i) => {
+            const textos = { recebido: 'Recebido', analise: 'Em análise', selecionado: 'Selecionado', preenchida: 'Vaga preenchida' };
+            const acoes = (!encerrada && c.status !== 'selecionado') ?
+              `<button class="botao-fantasma" onclick="marcarSelecionado(${v.id}, ${i})" style="margin-left:8px;">Selecionar</button>` : '';
+            return `<li><span>${escapeHtml(c.nome)}</span><span style="display:flex; align-items:center;"><span class="status-pill pill-${c.status}">${textos[c.status]}</span>${acoes}</span></li>`;
+          }).join('') + '</ul>';
+      return `
+      <div class="vaga-card">
+        <div class="vaga-topo">
+          <div><div class="vaga-titulo">${escapeHtml(v.titulo)}</div><div class="vaga-meta">${escapeHtml(v.setor)} · ${escapeHtml(v.tipo)} · ${v.candidatos.length} candidato(s)</div></div>
+          <span class="vaga-status ${encerrada ? 'status-encerrada' : 'status-aberta'}">${encerrada ? 'Encerrada' : 'Aberta'}</span>
+        </div>
+        <div class="vaga-desc">${escapeHtml(v.desc)}</div>
+        ${candidatosHtml}
+        <div class="vaga-acoes">
+          ${!encerrada ? `<button class="botao botao-garantido botao-pequeno" onclick="encerrarVaga(${v.id})">Encerrar vaga e notificar candidatos</button>` : `<span style="font-size:12.5px; color:#7A8580;">Notificação automática já enviada a todos os candidatos.</span>`}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function marcarSelecionado(vagaId, indice){
+    const vaga = vagas.find(v => v.id === vagaId);
+    vaga.candidatos.forEach(c => { if(c.status !== 'selecionado') c.status = 'analise'; });
+    vaga.candidatos[indice].status = 'selecionado';
+    mostrarToast('Candidato marcado como selecionado.');
+    renderizarVagasEmpregador();
+  }
+
+  function encerrarVaga(vagaId){
+    const vaga = vagas.find(v => v.id === vagaId);
+    vaga.status = 'encerrada';
+    vaga.candidatos.forEach(c => { if(c.status !== 'selecionado') c.status = 'preenchida'; });
+    mostrarToast('Vaga encerrada — notificação automática enviada a ' + vaga.candidatos.length + ' candidato(s).');
+    renderizarVagasEmpregador();
+  }
+
+  // inicialização
+  renderizarFormacoes();
+  renderizarExperiencias();
+  renderizarHabilidades();
+  renderizarIdiomas();
+</script>
+</body>
+</html>
